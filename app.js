@@ -8,6 +8,16 @@ const port = 4000;
 
 app.use(express.json());
 
+app.use((req, res, next) => {
+  console.log('Hello from the middleware 🙈');
+  next();
+});
+
+app.use((req, res, next) => {
+  req.requestTime = new Date().toISOString();
+  next();
+});
+
 // NEEDED to be done for __dirname to work!
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -27,8 +37,10 @@ const tours = JSON.parse(
 );
 
 const getAllTours = (req, res) => {
+  console.log(req.requestTime);
   res.status(200).json({
     status: 'success',
+    requestedAt: req.requestTime,
     result: tours.length,
     data: {
       tours,
