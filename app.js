@@ -40,7 +40,7 @@ app.get('/api/v1/tours/:id', (req, res) => {
   const id = parseInt(req.params.id);
 
   if (id > tours.length) {
-    return res.status(404).json({ status: 'failed', message: 'invalid id' });
+    return res.status(404).json({ status: 'failed', message: 'Invalid ID' });
   }
 
   const tour = tours.find((el) => el.id === id);
@@ -73,6 +73,24 @@ app.post('/api/v1/tours', (req, res) => {
       });
     }
   );
+});
+
+app.patch('/api/v1/tours/:id', (req, res) => {
+  const id = parseInt(req.params.id);
+
+  if (id > tours.length) {
+    res.status(404).json({
+      status: 'failed',
+      message: 'Invalid ID',
+    });
+  }
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      tour: 'TO BE UPDATED',
+    },
+  });
 });
 
 app.listen(port, () => {
