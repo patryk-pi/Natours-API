@@ -4,17 +4,11 @@ import mongoose from 'mongoose';
 
 dotenv.config({ path: './config.env' });
 
-console.log(process.env);
-
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.PASSWORD);
 
-mongoose
-  .connect(DB, {
-    useNewUrlParser: true,
-  })
-  .then((con) => {
-    console.log(con.connections);
-  });
+mongoose.connect(DB).then(() => {
+  console.log('DB CON SUC!');
+});
 
 const port = process.env.PORT || 4000;
 app.listen(port, () => {
