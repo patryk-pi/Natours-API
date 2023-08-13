@@ -74,7 +74,10 @@ export const getOneTour = async (req, res) => {
       },
     });
   } catch (err) {
-    console.log(err);
+    res.status(404).json({
+      status: 'failed',
+      message: err,
+    });
   }
   // const tour = tours.find((el) => el.id === id);
   // res.status(200).json({
@@ -120,13 +123,24 @@ export const addNewTour = async (req, res) => {
   // );
 };
 
-export const updateTour = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    data: {
-      tour: 'TO BE UPDATED',
-    },
-  });
+export const updateTour = async (req, res) => {
+  try {
+    const tour = await Tour.findByIdAndUpdate(req.params.id, req.body, {
+      new: true,
+      runValidators: true,
+    });
+    res.status(200).json({
+      status: 'success',
+      data: {
+        tour,
+      },
+    });
+  } catch {
+    res.status(404).json({
+      status: 'failed',
+      message: err,
+    });
+  }
 };
 
 export const deleteTour = (req, res) => {
