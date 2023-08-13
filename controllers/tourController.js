@@ -23,32 +23,59 @@ const __dirname = path.dirname(__filename);
 //   next();
 // };
 
-export const checkBody = (req, res, next) => {
-  const { name, price } = req.body;
-  console.log(name, price);
+// export const checkBody = (req, res, next) => {
+//   const { name, price } = req.body;
+//   console.log(name, price);
 
-  if (!name || !price) {
-    return res.status(400).json({
+//   if (!name || !price) {
+//     return res.status(400).json({
+//       status: 'failed',
+//       message: 'Missing properties',
+//     });
+//   }
+
+//   next();
+// };
+
+export const getAllTours = async (req, res) => {
+  try {
+    const tours = await Tour.find();
+
+    res.status(200).json({
+      status: 'success',
+      requestedAt: req.requestTime,
+      data: {
+        tours,
+      },
+      // result: tours.length,
+      // data: {
+      //   tours,
+      // },
+    });
+  } catch (err) {
+    res.status(404).json({
       status: 'failed',
-      message: 'Missing properties',
+      message: err,
     });
   }
-
-  next();
 };
 
-export const getAllTours = (req, res) => {
-  res.status(200).json({
-    status: 'success',
-    requestedAt: req.requestTime,
-    // result: tours.length,
-    // data: {
-    //   tours,
-    // },
-  });
-};
+export const getOneTour = async (req, res) => {
+  try {
+    const oneTour = await Tour.findById(req.params.id);
 
-export const getOneTour = (req, res) => {
+    // ANOTHER WAY
+    // const oneTour = await Tour.findOne({_id: req.params.id})
+
+    res.status(200).json({
+      status: 'success',
+      data: {
+        oneTour,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+  }
   // const tour = tours.find((el) => el.id === id);
   // res.status(200).json({
   //   status: 'success',
@@ -58,7 +85,23 @@ export const getOneTour = (req, res) => {
   // });
 };
 
-export const addNewTour = (req, res) => {
+export const addNewTour = async (req, res) => {
+  try {
+    const newTour = await Tour.create(req.body);
+
+    res.status(201).json({
+      status: 'success',
+      data: {
+        tour: newTour,
+      },
+    });
+  } catch (err) {
+    res.status(400).json({
+      status: 'failed',
+      message: err,
+    });
+  }
+
   // console.log(req.body);
   // const newId = tours[tours.length - 1].id + 1;
   // const newTour = Object.assign({ id: newId }, req.body);
