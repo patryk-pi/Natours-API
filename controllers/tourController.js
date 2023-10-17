@@ -39,6 +39,13 @@ const arr = [];
 //   next();
 // };
 
+export const aliasTopTours = (req, res, next) => {
+  req.query.limit = '5';
+  req.query.sort = '-ratingsAverage,price';
+  req.query.fields = 'name,price,ratingsAverage,summary,difficulty';
+  next();
+};
+
 export const getAllTours = async (req, res) => {
   try {
     // BUILD QUERY
@@ -52,7 +59,7 @@ export const getAllTours = async (req, res) => {
 
     let queryStr = JSON.stringify(queryObj);
     queryStr = queryStr.replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`);
-    const query = Tour.find(JSON.parse(queryStr)); // Initialize the query
+    let query = Tour.find(JSON.parse(queryStr)); // Initialize the query
 
     // 3. Sorting
     if (req.query.sort) {
@@ -62,7 +69,7 @@ export const getAllTours = async (req, res) => {
       query.sort('-createdAt');
     }
 
-    // 4. Fields limiting
+    // // 4. Fields limiting
     if (req.query.fields) {
       const fields = req.query.fields.split(',').join(' ');
       query.select(fields);
@@ -70,7 +77,7 @@ export const getAllTours = async (req, res) => {
       query.select('-__v');
     }
 
-    // PAGINATION
+    // // PAGINATION
 
     const page = req.query.page * 1 || 1;
     const limit = req.query.limit * 1 || 100;
@@ -79,11 +86,11 @@ export const getAllTours = async (req, res) => {
 
     query = query.skip(skip).limit(limit);
 
-    if (req.query.page) {
-      const numTours = await Tour.countDocuments();
+    // if (req.query.page) {
+    //   const numTours = await Tour.countDocuments();
 
-      if (skip >= numTours) throw new Error("This page doesn't exist");
-    }
+    //   if (skip >= numTours) throw new Error("This page doesn't exist");
+    // }
 
     // EXECUTE QUERY
     const tours = await query;
