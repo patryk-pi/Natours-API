@@ -268,8 +268,8 @@ export const getMonthlyPlan = async (req, res) => {
       {
         $match: {
           startDates: {
-            $gte: new Date(`${year}-01-01}`),
-            $lte: new Date(`${year}-12-31}`),
+            $gte: new Date(`${year}-01-01`),
+            $lte: new Date(`${year}-12-31`),
           },
         },
       },
