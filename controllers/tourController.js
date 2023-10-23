@@ -4,6 +4,7 @@ import { fileURLToPath } from 'url';
 import Tour from '../models/tourModel.js';
 import { APIFeatures } from '../utils/apiFeatures.js';
 import { catchAsync } from '../utils/catchAsync.js';
+import { AppError } from '../utils/appError.js';
 
 // NEEDED to be done for __dirname to work!
 const __filename = fileURLToPath(import.meta.url);
@@ -113,11 +114,15 @@ export const getAllTours = catchAsync(async (req, res, next) => {
 });
 
 export const getOneTour = catchAsync(
-  async (req, res) => {
+  async (req, res, next) => {
     const oneTour = await Tour.findById(req.params.id);
 
     // ANOTHER WAY
     // const oneTour = await Tour.findOne({_id: req.params.id})
+
+    if (!oneTour) {
+      return next(new AppError('No tour found with that id!', 404));
+    }
 
     res.status(200).json({
       status: 'success',
@@ -168,6 +173,11 @@ export const updateTour = catchAsync(async (req, res, next) => {
     new: true,
     runValidators: true,
   });
+
+  if (!tour) {
+    return next(new AppError('No tour found with that id!', 404));
+  }
+
   res.status(200).json({
     status: 'success',
     data: {
@@ -177,7 +187,12 @@ export const updateTour = catchAsync(async (req, res, next) => {
 });
 
 export const deleteTour = catchAsync(async (req, res, next) => {
-  await Tour.findByIdAndDelete(req.params.id);
+  const tour = await Tour.findByIdAndDelete(req.params.id);
+
+  if (!tour) {
+    return next(new AppError('No tour found with that id!', 404));
+  }
+
   res.status(204).json({
     status: 'success',
     data: null,
