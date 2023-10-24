@@ -2,6 +2,11 @@ import dotenv from 'dotenv';
 import app from './app.js';
 import mongoose from 'mongoose';
 
+process.on('uncaughtException', (err) => {
+  console.log('Unhandled rejection! Shutting down...');
+  process.exit(1);
+});
+
 dotenv.config({ path: './config.env' });
 
 const DB = process.env.DATABASE.replace('<PASSWORD>', process.env.PASSWORD);
