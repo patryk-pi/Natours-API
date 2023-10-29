@@ -2,6 +2,7 @@ import User from '../models/userModel.js';
 import { catchAsync } from '../utils/catchAsync.js';
 import jwt from 'jsonwebtoken';
 import { AppError } from '../utils/appError.js';
+import { promisify } from 'util';
 
 const singToken = (id) => {
   return jwt.sign({ id }, process.env.JWT_SECRET, {
@@ -41,6 +42,7 @@ export const login = catchAsync(async (req, res, next) => {
   const user = await User.findOne({ email }).select('+password');
 
   if (!user || !(await user.correctPassword(password, user.password))) {
+    console.log(user.password, password);
     return next(new AppError('Incorrect email or password', 401));
   }
   // 3 SEND TOKEN TO CLIENT
@@ -69,7 +71,11 @@ export const protect = catchAsync(async (req, res, next) => {
 
   // Validate token
 
+  const decoded = await promisify(jwt.verify)(token, process.env.JWT_SECRET);
+
   // Check if user still exists
+
+  const freshUser = await User.findById(decoded.id);
 
   // Check if user changed password after the token was issued
 
